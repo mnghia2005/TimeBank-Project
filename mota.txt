@@ -1,0 +1,17 @@
+TIMEBANK_PROJECT/
+│
+├── frontend/               
+│   ├── assets/
+│   ├── components/
+│   ├── dashboard.html
+│   └── ...
+│
+├── backend/                <-- "Vùng đất mới" của FastAPI
+│   ├── models.py           <-- (Model) Chứa cấu trúc các bảng CSDL
+│   ├── schemas.py          <-- (View) Định dạng dữ liệu JSON đầu vào/đầu ra
+│   ├── database.py         <-- Code kết nối MySQL/PostgreSQL
+│   ├── routers/            <-- (Controller) Chứa các file API (auth.py, tasks.py, exchange.py)
+│   └── main.py             <-- File gốc chạy toàn bộ Server
+│
+├── requirements.txt        <-- Danh sách thư viện Python (fastapi, uvicorn, sqlalchemy...)
+└── .venv/                  <-- Môi trường ảo Python

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Time Bank - Nạp & Rút Giờ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <style>
+        :root { --primary-color: #4f46e5; --bg-light: #f8fafc; --text-main: #0f172a; --text-muted: #64748b; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); color: var(--text-main); -webkit-font-smoothing: antialiased; }
+        
+        /* SIDEBAR - Đồng bộ 100% Dashboard mẫu */
+        .sidebar { background-color: #ffffff; border-right: 1px solid #e2e8f0; height: 100vh; padding: 1.5rem; transition: 0.3s; width: 260px; }
+        .nav-link { border-radius: 14px; transition: all 0.2s; padding: 12px 16px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: flex; align-items: center; text-decoration: none; white-space: nowrap; }
+        .nav-link i { font-size: 1.2rem; margin-right: 12px; flex-shrink: 0; }
+        .nav-link:hover { background-color: #f1f5f9; color: var(--primary-color); transform: translateX(4px); }
+        .nav-link.active { background-color: var(--primary-color) !important; color: white !important; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
+
+        /* CARD CHUNG */
+        .card-main { border-radius: 32px; border: none; background: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04); transition: 0.3s; }
+        
+        /* BALANCE CARD - Fix lỗi che chữ "Tương đương" */
+        .card-balance { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border-radius: 32px; border: none; color: white; box-shadow: 0 20px 40px rgba(79, 70, 229, 0.2); }
+        .vnd-badge { background: rgba(0, 0, 0, 0.25); border-radius: 100px; padding: 12px 24px; font-weight: 700; color: #ffffff !important; display: inline-block; border: 1px solid rgba(255, 255, 255, 0.15); backdrop-filter: blur(4px); }
+
+        /* TABS NẠP/RÚT - Fix lỗi co kéo và che chữ */
+        .nav-pills-exchange { background: #f1f5f9; border-radius: 20px; padding: 8px; display: flex; width: 100%; border: none; gap: 4px; }
+        .nav-pills-exchange .nav-item { flex: 1; }
+        .nav-pills-exchange .nav-link { border-radius: 16px; padding: 14px 10px; color: var(--text-muted) !important; font-weight: 700; transition: 0.3s; width: 100%; border: none; display: flex; align-items: center; justify-content: center; }
+        .nav-pills-exchange .nav-link i { margin-right: 8px; font-size: 1.1rem; }
+        .nav-pills-exchange .nav-link.active { background: white !important; color: var(--primary-color) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        
+        /* FORM INPUT */
+        .input-group-custom { background: #f8fafc; border-radius: 18px; border: 2px solid #f1f5f9; overflow: hidden; transition: 0.2s; }
+        .input-group-custom:focus-within { border-color: var(--primary-color); background: white; box-shadow: 0 0 0 5px rgba(79, 70, 229, 0.08); }
+        .input-group-custom input { background: transparent; border: none; padding: 18px; font-weight: 700; font-size: 1.2rem; outline: none; color: var(--text-main); }
+        
+        .form-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 800; margin-bottom: 10px; padding-left: 4px; }
+        .btn-confirm { border-radius: 20px; padding: 18px; font-weight: 800; letter-spacing: 1px; transition: 0.3s; border: none; }
+        .btn-confirm:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3); }
+
+        .modal-content { border-radius: 32px; border: none; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <nav class="col-md-auto sidebar sticky-top d-none d-md-flex flex-column">
+                <div class="px-3 mb-5 d-flex align-items-center">
+                    <div class="bg-primary p-2 rounded-3 me-3"><i class="bi bi-clock-history text-white fs-5"></i></div>
+                    <h4 class="fw-bold text-primary mb-0" style="letter-spacing: -1px;">TIME BANK</h4>
+                </div>
+                <ul class="nav flex-column flex-grow-1" id="sidebarNav">
+                    <li class="nav-item"><a class="nav-link" href="dashboard.html"><i class="bi bi-grid-1x2"></i>Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="create_request.html"><i class="bi bi-plus-circle"></i>Submit Request</a></li>
+                    <li class="nav-item"><a class="nav-link" href="available_tasks.html"><i class="bi bi-search"></i>Available Tasks</a></li>
+                    <li class="nav-item"><a class="nav-link" href="my_tasks.html"><i class="bi bi-briefcase"></i>My Tasks</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="exchange.html"><i class="bi bi-currency-exchange"></i>Nạp & Rút giờ</a></li>
+                </ul>
+               
+            </nav>
+
+            <main class="col p-4 p-md-5">
+                <header class="mb-5">
+                    <h2 class="fw-bold mb-1" style="letter-spacing: -1.5px;">Quy đổi Time-Credit</h2>
+                    <p class="text-muted fw-medium">Nạp hoặc rút số giờ làm việc của bạn sang VNĐ.</p>
+                </header>
+
+                <div class="container-fluid p-0">
+                    <div class="row g-5">
+                        <div class="col-xl-7">
+                            <div class="card card-main overflow-hidden">
+                                <div class="p-4 pb-0">
+                                    <ul class="nav nav-pills nav-pills-exchange" role="tablist">
+                                        <li class="nav-item"><button class="nav-link active fw-bold" data-bs-toggle="tab" data-bs-target="#deposit" type="button"><i class="bi bi-plus-circle"></i>Nạp Giờ</button></li>
+                                        <li class="nav-item"><button class="nav-link fw-bold" data-bs-toggle="tab" data-bs-target="#withdraw" type="button"><i class="bi bi-dash-circle"></i>Rút Giờ</button></li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="card-body p-4 p-md-5 pt-4">
+                                    <div class="tab-content">
+                                        <div class="tab-pane fade show active" id="deposit">
+                                            <p class="text-muted mb-4 small fw-medium"><i class="bi bi-info-circle me-1"></i> Tỉ giá cố định: 1 Giờ = 100.000 VNĐ</p>
+                                            <form id="depositForm">
+                                                <div class="mb-4">
+                                                    <label class="form-label">Số giờ muốn nạp</label>
+                                                    <div class="input-group input-group-custom">
+                                                        <input type="number" id="depositHours" class="form-control" placeholder="0" min="1" required>
+                                                        <span class="input-group-text bg-transparent border-0 fw-bold pe-4 text-muted">GIỜ</span>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-5 bg-primary bg-opacity-10 p-4 rounded-4 text-primary fw-bold d-flex justify-content-between align-items-center">
+                                                    <span>SỐ TIỀN THANH TOÁN:</span>
+                                                    <span class="h3 mb-0" id="depositAmount">0 ₫</span>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary w-100 btn-confirm shadow">TIẾP TỤC THANH TOÁN</button>
+                                            </form>
+                                        </div>
+
+                                        <div class="tab-pane fade" id="withdraw">
+                                            <p class="text-muted mb-4 small fw-medium"><i class="bi bi-info-circle me-1"></i> Phí dịch vụ rút: 5% tổng số tiền</p>
+                                            <form id="withdrawForm">
+                                                <div class="mb-4">
+                                                    <label class="form-label">Số giờ muốn rút</label>
+                                                    <div class="input-group input-group-custom">
+                                                        <input type="number" id="withdrawHours" class="form-control" placeholder="0" min="1" required>
+                                                        <span class="input-group-text bg-transparent border-0 fw-bold pe-4 text-muted">GIỜ</span>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-4">
+                                                    <label class="form-label">Thông tin nhận tiền</label>
+                                                    <textarea id="bankInfo" class="form-control rounded-4 p-3 border-2 shadow-none" rows="2" placeholder="STK - Ngân hàng - Tên chủ tài khoản" required></textarea>
+                                                </div>
+                                                <div class="mb-5 bg-success bg-opacity-10 p-4 rounded-4 text-success fw-bold d-flex justify-content-between align-items-center">
+                                                    <span>TIỀN NHẬN ƯỚC TÍNH:</span>
+                                                    <span class="h3 mb-0" id="withdrawAmount">0 ₫</span>
+                                                </div>
+                                                <button type="submit" class="btn btn-success w-100 btn-confirm shadow">XÁC NHẬN RÚT TIỀN</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-5">
+                            <div class="card card-balance p-4 text-center py-5 mb-4">
+                                <div class="card-body">
+                                    <p class="opacity-75 small fw-bold text-uppercase mb-2" style="letter-spacing: 2px;">Số dư hiện tại</p>
+                                    <h1 class="fw-bold display-2 mb-4" id="currentBalance">0h</h1>
+                                    <div class="vnd-badge" id="currentVnd">≈ 0 VNĐ</div>
+                                </div>
+                            </div>
+
+                            <div class="card card-main p-4">
+                                <h6 class="fw-bold mb-3 text-primary d-flex align-items-center"><i class="bi bi-shield-check fs-4 me-2"></i> Chính sách an toàn</h6>
+                                <ul class="small text-muted ps-3 mb-0 lh-lg fw-medium">
+                                    <li>Mã QR được tạo duy nhất cho mỗi giao dịch.</li>
+                                    <li>Hệ thống tự động xác nhận sau vài phút.</li>
+                                    <li>Giờ rút sẽ được tạm khóa cho đến khi Admin duyệt.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="modal fade" id="qrModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0 pe-4 pt-4"><button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body text-center p-5 pt-0">
+                    <h4 class="fw-bold text-dark mb-4" style="letter-spacing: -1px;">Quét mã chuyển khoản</h4>
+                    <div class="bg-white p-3 d-inline-block rounded-4 shadow-sm mb-4 border border-5 border-light">
+                        <img id="qrImage" src="" alt="QR" class="img-fluid" style="max-width: 280px; border-radius: 15px;">
+                    </div>
+                    <div class="bg-light p-4 rounded-4 text-start mb-4">
+                        <div class="mb-3 d-flex justify-content-between border-bottom pb-2"><span class="small text-muted fw-bold">SỐ TIỀN:</span><span class="fw-bold text-primary h5 mb-0" id="modalAmount">0 ₫</span></div>
+                        <div class="d-flex justify-content-between align-items-center"><span class="small text-muted fw-bold">NỘI DUNG:</span><span class="badge bg-white text-dark border-2 border-primary border-opacity-25 px-3 py-2 fw-bold fs-6" id="modalMemo">NAP</span></div>
+                    </div>
+                    <button type="button" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-lg" onclick="confirmDeposit()">XÁC NHẬN ĐÃ CHUYỂN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/exchange.js"></script>
+</body>
+</html>

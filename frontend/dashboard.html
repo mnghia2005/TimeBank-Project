@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Bank - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        :root { --primary-color: #4f46e5; --bg-light: #f8fafc; --text-main: #0f172a; --text-muted: #64748b; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); color: var(--text-main); -webkit-font-smoothing: antialiased; }
+        
+        /* Sidebar Indigo Style */
+        .sidebar { background-color: #ffffff; border-right: 1px solid #e2e8f0; height: 100vh; padding: 1.5rem; transition: 0.3s; }
+        .nav-link { border-radius: 14px; transition: all 0.2s; padding: 12px 16px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; border: 1px solid transparent; }
+        .nav-link:hover { background-color: #f1f5f9; color: var(--primary-color); transform: translateX(4px); }
+        .nav-link.active { background-color: var(--primary-color) !important; color: white !important; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
+        .admin-link { background-color: #fff1f2; color: #e11d48 !important; border: 1px dashed #fda4af; margin-top: 1.5rem; }
+        .admin-link:hover { background-color: #ffe4e6; transform: scale(1.02); }
+
+        /* Card Nâng Cao */
+        .card-main { border-radius: 28px; border: none; background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.03); transition: 0.3s; }
+        .card-main:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); }
+        .stat-card { border-left: 6px solid var(--primary-color); }
+        
+        /* Bảng & UI Element */
+        .table thead th { background: #f8fafc; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: var(--text-muted); border: none; padding: 1rem; }
+        .cursor-pointer { cursor: pointer; }
+        .badge-indigo { background: rgba(79, 70, 229, 0.1); color: var(--primary-color); font-weight: 700; border-radius: 10px; }
+        
+        /* Modal Style */
+        .modal-content { border-radius: 32px; border: none; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <nav class="col-md-2 sidebar sticky-top d-none d-md-flex flex-column">
+                <div class="px-3 mb-5 d-flex align-items-center">
+                    <div class="bg-primary p-2 rounded-3 me-3"><i class="bi bi-clock-history text-white fs-5"></i></div>
+                    <h4 class="fw-bold text-primary mb-0" style="letter-spacing: -1px;">TIME BANK</h4>
+                </div>
+                <ul class="nav flex-column flex-grow-1" id="sidebarNav">
+                    <li class="nav-item"><a class="nav-link active" href="dashboard.html"><i class="bi bi-grid-1x2 me-3"></i>Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="create_request.html"><i class="bi bi-plus-circle me-3"></i>Submit Request</a></li>
+                    <li class="nav-item"><a class="nav-link" href="available_tasks.html"><i class="bi bi-search me-3"></i>Available Tasks</a></li>
+                    <li class="nav-item"><a class="nav-link" href="my_tasks.html"><i class="bi bi-briefcase me-3"></i>My Tasks</a></li>
+                    <li class="nav-item"><a class="nav-link" href="exchange.html"><i class="bi bi-currency-exchange me-3"></i>Nạp & Rút giờ</a></li>
+                </ul>
+                <div class="mt-auto border-top pt-3">
+                    <a class="nav-link text-danger" href="settings.html"><i class="bi bi-box-arrow-right me-3"></i>Setting</a>
+                    <a class="nav-link text-danger" href="login.html" id="btnLogout"><i class="bi bi-box-arrow-right me-3"></i>Logout</a>
+                </div>
+            </nav>
+
+            <main class="col-md-10 p-4 p-md-5">
+                <header class="mb-5 d-flex justify-content-between align-items-end">
+                    <div>
+                        <h2 class="fw-bold mb-1" style="letter-spacing: -1.5px;">Dashboard</h2>
+                        <p class="text-muted mb-0">Chào mừng trở lại, <span id="displayName" class="fw-bold text-primary">Nghĩa</span> 👋</p>
+                    </div>
+                    <div class="d-none d-lg-block">
+                        <span class="badge badge-indigo p-2 px-3">Hôm nay: 02/04/2026</span>
+                    </div>
+                </header>
+
+                <div class="row mb-5 g-4">
+                    <div class="col-md-4"><div class="card card-main p-4 stat-card shadow-sm"><h5>Số dư khả dụng</h5><h2 id="displayBalance" class="fw-bold text-primary display-6">0h</h2></div></div>
+                    <div class="col-md-4"><div class="card card-main p-4 border-start border-success border-6 shadow-sm"><h5>Tổng thu nhập</h5><h2 id="displayIncome" class="fw-bold text-success display-6">0h</h2></div></div>
+                    <div class="col-md-4"><div class="card card-main p-4 border-start border-warning border-6 shadow-sm"><h5>Yêu cầu đang mở</h5><h2 id="displayPending" class="fw-bold text-warning display-6">0</h2></div></div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-7">
+                        <div class="card card-main p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="fw-bold mb-0">Biểu đồ thu chi</h5>
+                                <select class="form-select form-select-sm w-auto border-0 bg-light rounded-pill px-3">
+                                    <option>7 ngày qua</option>
+                                </select>
+                            </div>
+                            <div style="height: 350px;"><canvas id="myChart"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="card card-main p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="fw-bold mb-0">Hoạt động gần đây</h5>
+                                <button class="btn btn-link text-primary fw-bold p-0 text-decoration-none" onclick="openAllTransactions()">Xem tất cả</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <tbody id="tableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="modal fade" id="txDetailModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0"><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body p-5 pt-0 text-center" id="txDetailContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="allTransactionsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header p-4 px-5 border-bottom">
+                    <h5 class="fw-bold mb-0">Toàn bộ lịch sử giao dịch</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-5">
+                    <div class="input-group mb-4 shadow-sm overflow-hidden" style="border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <span class="input-group-text bg-white border-0 ps-4"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" id="searchTxInput" class="form-control border-0 shadow-none py-3" placeholder="Tìm tên công việc, loại giao dịch...">
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead><tr><th>Thông tin giao dịch</th><th>Số giờ</th><th>Ngày thực hiện</th></tr></thead>
+                            <tbody id="allTxTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+</body>
+</html>

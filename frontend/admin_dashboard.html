@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Bank - Quản trị hệ thống</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        :root { --primary-color: #4f46e5; --bg-light: #f8fafc; }
+        body { background: var(--bg-light); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        
+        .card-admin { border-radius: 30px; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.03); background: white; overflow: hidden; }
+        
+        .nav-pills .nav-link { color: #64748b; font-weight: 700; padding: 14px 28px; border-radius: 16px; margin-right: 8px; transition: 0.2s; border: 1px solid transparent; }
+        .nav-pills .nav-link:hover { background: #f1f5f9; color: var(--primary-color); }
+        .nav-pills .nav-link.active { background: var(--primary-color); color: white; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2); }
+        
+        .table thead th { background: #f8fafc; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.1em; color: #64748b; padding: 20px; border: none; }
+        .table tbody td { padding: 20px; border-bottom: 1px solid #f1f5f9; }
+        
+        .search-wrapper { background: white; border-radius: 20px; border: 1px solid #e2e8f0; padding: 4px 10px; }
+        .btn-action { border-radius: 12px; font-weight: 700; padding: 8px 18px; }
+        
+        .status-pill { padding: 6px 14px; border-radius: 100px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+        .bg-pending { background: #fff7ed; color: #c2410c; }
+        .bg-success-light { background: #f0fdf4; color: #15803d; }
+        .cursor-pointer { cursor: pointer; }
+        .hover-bg-light:hover { background-color: #f8fafc; }
+    </style>
+</head>
+<body class="p-4 p-md-5">
+    <div class="container-xl">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary p-3 rounded-4 me-4 shadow-sm text-white"><i class="bi bi-shield-lock-fill fs-3"></i></div>
+                <div>
+                    <h2 class="fw-bold mb-0" style="letter-spacing: -2px;">Admin Dashboard</h2>
+                    <p class="text-muted mb-0 small fw-medium text-uppercase">Hệ thống quản trị Time Bank Pro</p>
+                </div>
+            </div>
+            <a href="dashboard.html" class="btn btn-outline-dark rounded-pill px-4 fw-bold shadow-sm border-2">
+                <i class="bi bi-arrow-left me-2"></i>Quay lại User Mode
+            </a>
+        </div>
+
+        <ul class="nav nav-pills mb-5 p-2 bg-white rounded-4 shadow-sm w-fit" id="adminTab" role="tablist">
+            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#deposits">Duyệt nạp tiền</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#withdrawals">Duyệt rút tiền</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tasks">Quản lý Task</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#users">Quản lý User</button></li>
+            <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#withdrawStats">
+        Thống kê rút tiền
+    </button>
+</li>
+        </ul>
+
+        <div class="tab-content">
+
+<div class="tab-pane fade" id="withdrawStats">
+    
+    <!-- Thanh công cụ -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h6 class="fw-bold mb-0">Thống kê rút giờ theo người dùng</h6>
+            <small class="text-muted">Chỉ tính giao dịch đã được Admin duyệt</small>
+        </div>
+
+        <!-- Nút sắp xếp -->
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm rounded-pill px-3 fw-bold btn-primary" 
+                    id="btnSortDesc" onclick="sortWithdrawTable('desc')">
+                <i class="bi bi-sort-down me-1"></i> Nhiều → Ít
+            </button>
+            <button class="btn btn-sm rounded-pill px-3 fw-bold btn-outline-secondary" 
+                    id="btnSortAsc" onclick="sortWithdrawTable('asc')">
+                <i class="bi bi-sort-up me-1"></i> Ít → Nhiều
+            </button>
+        </div>
+    </div>
+
+    <!-- Bảng thống kê -->
+    <div class="card card-admin shadow-sm">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-5">Hạng</th>
+                        <th>Thành viên</th>
+                        <th>Số lần rút</th>
+                        <th>Tổng giờ đã rút</th>
+                        <th>Tổng tiền (VNĐ)</th>
+                    </tr>
+                </thead>
+                <tbody id="withdrawStatsBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+            <div class="tab-pane fade show active" id="deposits">
+                <div class="card card-admin shadow-sm">
+                    <div class="table-responsive"><table class="table align-middle mb-0"><tbody id="listDeposits"></tbody></table></div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="withdrawals">
+                <div class="card card-admin shadow-sm">
+                    <div class="table-responsive"><table class="table align-middle mb-0"><tbody id="listWithdrawals"></tbody></table></div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="tasks">
+                <div class="card card-admin shadow-sm">
+                    <div class="table-responsive"><table class="table align-middle mb-0"><tbody id="listTasks"></tbody></table></div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="users">
+                <div class="mb-4">
+                    <div class="input-group search-wrapper shadow-sm border-0">
+                        <span class="input-group-text bg-white border-0 ps-3"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" id="userSearchInput" class="form-control border-0 shadow-none py-3" placeholder="Tìm tên, username hoặc email người dùng...">
+                    </div>
+                </div>
+                <div class="card card-admin shadow-sm">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead><tr><th class="ps-5">Họ và tên</th><th>Username</th><th>Số dư ví</th><th class="text-center pe-5">Quyền hạn</th></tr></thead>
+                            <tbody id="listUsers"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="taskDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 30px;">
+                <div class="modal-header border-0 pb-0 pe-4 pt-4">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 p-md-5 pt-0" id="taskDetailContent">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/admin_dashboard.js"></script>
+</body>
+</html>
